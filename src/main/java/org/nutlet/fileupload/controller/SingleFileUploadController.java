@@ -42,16 +42,22 @@ public class SingleFileUploadController {
      * 直接抛出敏感异常
      */
     @PostMapping("form-data")
-    public FileResponseVO formDataFileUpload(@RequestParam(value = "file", required = true) MultipartFile multipartFile) throws IOException {
+    public FileResponseVO formDataFileUpload(@RequestParam(value = "file", required = true) MultipartFile multipartFile) throws IOException, ApplicationException {
         FileResponseVO fileResponseVO = new FileResponseVO();
         List<FileInfoVO> fileInfoVOList = new ArrayList<>();
 
+        LOGGER.info("file size: {}", multipartFile.getSize());
+        if (multipartFile.getSize() > FILE_MAX_SIZE) {
+            throw new ApplicationException("file size to big");
+        }
+
         // 未更换名称
-        String fileSavePath = multipartFile.getOriginalFilename();
-        File file = new File(fileSavePath);
+        String tempFileName = FileUtil.generateTempFileName();
+        String fileSaveTempPath = FILE_TEMP_PATH + File.separator + tempFileName;
+        File file = new File(fileSaveTempPath);
         multipartFile.transferTo(file.getAbsoluteFile());
+
         LOGGER.info("save file to path: {}", file.getAbsolutePath());
-        LOGGER.info("file size: {}", file.length());
 
         // getSize获取字节
         DataSize dataSize = DataSize.ofBytes(multipartFile.getSize());
