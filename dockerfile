@@ -8,4 +8,4 @@ COPY ./target/fileupload-0.0.1-SNAPSHOT.jar /fileupload/fileupload-0.0.1-SNAPSHO
 # 暴露端口
 EXPOSE 8090
 # 启动命令
-CMD ["java", "-jar", "/fileupload/fileupload-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar","-Dfile.destination.temp.path=/fileupload/temp","-Dfile.destination.save.path=/fileupload/save", "/fileupload/fileupload-0.0.1-SNAPSHOT.jar"]
